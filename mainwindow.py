@@ -1,9 +1,10 @@
 import subprocess
 import config as t2
+import copy
 
 class TestRunner:
     def __init__(self):
-        self.dictionary_list = t2.deepcopy
+        self.dictionary_list = copy.deepcopy(t2.group)
 
     def run_commands(self):
         for value in self.dictionary_list.values():
