@@ -1,4 +1,5 @@
 import subprocess
+import win32com.client
 import config as c
 import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget
@@ -7,6 +8,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Main Window")
+        #win32com
         
         # メインウィジェットを作成
         main_widget = QWidget()
@@ -29,12 +31,14 @@ class MainWindow(QMainWindow):
         main_widget.setLayout(layout)
 
     def on_button1_clicked(self):
-        print("Button 1 clicked")
+        #configを実行する
+        subprocess.Popen(["python", "config.py"])
+
 
     def on_button2_clicked(self):
-        print("Button 2 clicked")
+        self.doing()
     
-    def __init__(self):
+    def doing(self):
         self.dictionary_list = c.Config.group
         print(c.Config.group)
 
