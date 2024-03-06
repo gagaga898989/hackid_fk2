@@ -6,6 +6,7 @@ import PySide6.QtCore as Qc
 import PySide6.QtWidgets as Qw
 import mainwindow as m
 import getpass
+import json
 
 # PySide6.QtWidgets.MainWindow を継承した MainWindow クラスの定義
 class Config(Qw.QScrollArea):
@@ -118,6 +119,8 @@ class Config(Qw.QScrollArea):
   def add(self):
     self.group[self.tb_name.text()] = [i.file[:list(re.finditer(r'\.[eE][xX][eE]', i.file))[-1].end()+1] for i in self.checkboxes if i.isChecked()]
     print(self.group)
+    with open("data.json", "w") as json_file:
+        json.dump(self.group, json_file)
 
   def exp(self):
     path = Qw.QFileDialog.getOpenFileNames(
