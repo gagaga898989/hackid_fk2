@@ -1,16 +1,17 @@
-import os
-import copy
 import win32com.client
 import sys
 from pathlib import Path
 import PySide6.QtCore as Qc
 import PySide6.QtWidgets as Qw
 import mainwindow as m
+import getpass
 
 # PySide6.QtWidgets.MainWindow を継承した MainWindow クラスの定義
 class Config(Qw.QScrollArea):
-  group:dict = {"test":[r"C:\Program Files (x86)\Microsoft Office\root\Office16\WINWORD.EXE"]}
-  p_temp = Path(r"C:\\")
+  user = getpass.getuser()
+  group:dict = {}
+  desktop = Path(f"C:\\Users\\{user}\\Desktop")
+  startmenu = Path(f"C:\\Users\\{user}\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs")
   def __init__(self):
     wshell = win32com.client.Dispatch("WScript.Shell")
     super().__init__()
@@ -82,8 +83,9 @@ class Config(Qw.QScrollArea):
 
     # チェックボックス形式
     #region
-    l = [wshell.CreateShortcut(str(p.resolve())).TargetPath for p in self.p_temp.glob('**/*.lnk') if ".exe" in wshell.CreateShortcut(str(p.resolve())).TargetPath]
-    l = list(set(l))
+    l = [wshell.CreateShortcut(str(p.resolve())).TargetPath for p in self.desktop.glob('**/*.lnk') if ".exe" in wshell.CreateShortcut(str(p.resolve())).TargetPath]\
+      +[wshell.CreateShortcut(str(p.resolve())).TargetPath for p in self.startmenu.glob('**/*.lnk') if ".exe" in wshell.CreateShortcut(str(p.resolve())).TargetPath]
+    l = sorted(list(set(l)))
 
     # チェックボックスの生成と設定
     self.checkboxes : list[Qw.QCheckBox] = []
