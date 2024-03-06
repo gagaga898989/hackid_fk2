@@ -4,7 +4,7 @@ import copy
 
 class TestRunner:
     def __init__(self):
-        self.dictionary_list = copy.deepcopy(t2.group)
+        self.dictionary_list = copy.deepcopy(t2.deepcopy)
 
     def run_commands(self):
         for value in self.dictionary_list.values():
