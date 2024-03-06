@@ -120,6 +120,7 @@ class Config(Qw.QScrollArea):
       "実行ファイル (*.exe)"
       )
     self.group[self.tb_name.text()] = path[0]
+    print(self.group)
 
 
 # 本体
