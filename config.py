@@ -119,8 +119,7 @@ class Config(Qw.QScrollArea):
       "", # 初期位置（フォルダパス）
       "実行ファイル (*.exe)"
       )
-    print(type(path[0]))
-    print(path[0])
+    self.group[self.tb_name.text()] = path[0]
 
 
 # 本体
