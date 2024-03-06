@@ -15,24 +15,29 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(main_widget)
 
         # ボタン1を作成
-        button1 = QPushButton("Button 1")
+        button1 = QPushButton("リスト作成")
         button1.clicked.connect(self.on_button1_clicked)
 
         # ボタン2を作成
-        button2 = QPushButton("Button 2")
+        button2 = QPushButton("起動")
         button2.clicked.connect(self.on_button2_clicked)
 
-        # レイアウトを作成してボタンを配置
+        # レイアウトを作成してボタンを下側に配置
         layout = QVBoxLayout()
+        layout.addStretch()  # ボタンを下側に移動するためにストレッチを追加
         layout.addWidget(button1)
         layout.addWidget(button2)
 
         # メインウィジェットにレイアウトをセット
         main_widget.setLayout(layout)
 
+        # ウィンドウのサイズを固定
+        self.setFixedSize(400, 300)
+
     def on_button1_clicked(self):
         #configを実行する
-        subprocess.Popen(["python", "config.py"])
+        self.w = c.Config()
+        self.w.show()
 
 
     def on_button2_clicked(self):
@@ -40,7 +45,7 @@ class MainWindow(QMainWindow):
     
     def doing(self):
         self.dictionary_list = c.Config.group
-        print(c.Config.group)
+        self.run_commands()
 
     def run_commands(self):
         key = "test"
