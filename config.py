@@ -116,7 +116,7 @@ class Config(Qw.QScrollArea):
       i.setCheckState(Qc.Qt.CheckState.Unchecked)
 
   def add(self):
-    self.group[self.tb_name.text()] = [i.file[:i.file.rfind(".exe")+4] for i in self.checkboxes if i.isChecked()]
+    self.group[self.tb_name.text()] = [i.file[:list(re.finditer(r'\.[eE][xX][eE]', i.file))[-1].end()+1] for i in self.checkboxes if i.isChecked()]
     print(self.group)
 
   def exp(self):
