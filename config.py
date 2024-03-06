@@ -119,6 +119,8 @@ class Config(Qw.QScrollArea):
   def add(self):
     self.group[self.tb_name.text()] = [i.file[:i.file.rfind(".exe")+4] for i in self.checkboxes if i.isChecked()]
     print(self.group)
+    with open("data.json", "w") as json_file:
+        json.dump(self.group, json_file)
 
   def exp(self):
     path = Qw.QFileDialog.getOpenFileNames(
