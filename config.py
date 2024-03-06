@@ -54,6 +54,14 @@ class Config(Qw.QScrollArea):
     button_layout.addWidget(self.btn_Alluncheck)
     self.btn_Alluncheck.clicked.connect(self.Alluncheck)
 
+    #「エクスプローラーで選択」ボタンの生成と設定
+    self.btn_exp = Qw.QPushButton('エクスプローラーで選択')
+    self.btn_exp.setMinimumSize(70,20)
+    self.btn_exp.setMaximumSize(100,20)
+    self.btn_exp.setSizePolicy(sp_exp,sp_exp)
+    button_layout.addWidget(self.btn_exp)
+    self.btn_exp.clicked.connect(self.exp)
+
     # # ナビゲーション情報を表示するラベル
     # self.init_navi_msg = \
     #     "グループ化するexeファイルを選択"
@@ -71,6 +79,8 @@ class Config(Qw.QScrollArea):
     self.tb_name.setAcceptDrops(False)
     main_layout.addWidget(self.tb_name)
 
+    # チェックボックス形式
+    #region
     l = [str(p.resolve()) for p in self.p_temp.glob('**/*.exe')]
     print(l)
 
@@ -88,6 +98,7 @@ class Config(Qw.QScrollArea):
     layout = main_layout
     inner.setLayout(layout)
     self.setWidget(inner)
+    # endregion
 
   def Allcheck(self):
     for i in self.checkboxes:
@@ -100,6 +111,16 @@ class Config(Qw.QScrollArea):
   def add(self):
     self.group[self.tb_name.text()] = [i.file for i in self.checkboxes if i.isChecked()]
     print(self.group)
+
+  def exp(self):
+    path = Qw.QFileDialog.getOpenFileNames(
+      self,      # 親ウィンドウ
+      "複数ファイル選択",     # ダイアログタイトル
+      "", # 初期位置（フォルダパス）
+      "実行ファイル (*.exe)"
+      )
+    print(type(path[0]))
+    print(path[0])
 
 
 # 本体
