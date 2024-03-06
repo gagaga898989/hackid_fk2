@@ -11,7 +11,7 @@ class Config(Qw.QScrollArea):
   user = getpass.getuser()
   group:dict = {}
   desktop = Path(f"C:\\Users\\{user}\\Desktop")
-  startmenu = Path(f"C:\\Users\\{user}\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs")
+  startmenu = Path(f"C:\ProgramData\Microsoft\Windows\Start Menu\Programs")
   def __init__(self):
     wshell = win32com.client.Dispatch("WScript.Shell")
     super().__init__()
@@ -83,8 +83,11 @@ class Config(Qw.QScrollArea):
 
     # チェックボックス形式
     #region
-    l = [wshell.CreateShortcut(str(p.resolve())).TargetPath for p in self.desktop.glob('**/*.lnk') if ".exe" in wshell.CreateShortcut(str(p.resolve())).TargetPath]\
-      +[wshell.CreateShortcut(str(p.resolve())).TargetPath for p in self.startmenu.glob('**/*.lnk') if ".exe" in wshell.CreateShortcut(str(p.resolve())).TargetPath]
+    l = \
+    [wshell.CreateShortcut(str(p.resolve())).TargetPath for p in self.desktop.glob('**/*.lnk') \
+    if ".exe" in wshell.CreateShortcut(str(p.resolve())).TargetPath]\
+   +[wshell.CreateShortcut(str(p.resolve())).TargetPath for p in self.startmenu.glob('**/*.lnk') \
+    if ".exe" in wshell.CreateShortcut(str(p.resolve())).TargetPath]
     l = sorted(list(set(l)))
 
     # チェックボックスの生成と設定
