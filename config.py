@@ -1,5 +1,6 @@
 import win32com.client
 import sys
+import re
 from pathlib import Path
 import PySide6.QtCore as Qc
 import PySide6.QtWidgets as Qw
@@ -85,9 +86,9 @@ class Config(Qw.QScrollArea):
     #region
     l = \
     [wshell.CreateShortcut(str(p.resolve())).TargetPath for p in self.desktop.glob('**/*.lnk') \
-    if ".exe" in wshell.CreateShortcut(str(p.resolve())).TargetPath]\
+    if re.search(r'.*\.[eE][xX][eE]', wshell.CreateShortcut(str(p.resolve())).TargetPath)]\
    +[wshell.CreateShortcut(str(p.resolve())).TargetPath for p in self.startmenu.glob('**/*.lnk') \
-    if ".exe" in wshell.CreateShortcut(str(p.resolve())).TargetPath]
+    if re.search(r'.*\.[eE][xX][eE]', wshell.CreateShortcut(str(p.resolve())).TargetPath)]
     l = sorted(list(set(l)))
 
     # チェックボックスの生成と設定
