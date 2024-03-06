@@ -6,6 +6,7 @@ import PySide6.QtCore as Qc
 import PySide6.QtWidgets as Qw
 import mainwindow as m
 import getpass
+import json
 
 # PySide6.QtWidgets.MainWindow を継承した MainWindow クラスの定義
 class Config(Qw.QScrollArea):
