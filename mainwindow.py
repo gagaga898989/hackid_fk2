@@ -1,18 +1,19 @@
 import subprocess
-import config as t2
-import copy
+import config as c
+import sys
+import PySide6.QtWidgets as Qw
 
 class TestRunner:
     def __init__(self):
-        self.dictionary_list = copy.deepcopy(t2.deepcopy)
+        self.dictionary_list = c.Config.group
+        print(c.Config.group)
 
     def run_commands(self):
-        for value in self.dictionary_list.values():
-            if isinstance(value, list):
+        key = "test"
+        for value in self.dictionary_list[key]:
+            if isinstance(value, str):
                 print(value)
-                commands_list = value
-                for command in commands_list:
-                    subprocess.Popen(command)
+                subprocess.Popen(value)
 
 if __name__ == "__main__":
     runner = TestRunner()

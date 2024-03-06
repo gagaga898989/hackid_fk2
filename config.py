@@ -1,5 +1,6 @@
 import os
 import copy
+import win32com.client
 import sys
 from pathlib import Path
 import PySide6.QtCore as Qc
@@ -8,12 +9,12 @@ import mainwindow as m
 
 # PySide6.QtWidgets.MainWindow を継承した MainWindow クラスの定義
 class Config(Qw.QScrollArea):
-  group:dict = {}
-  p_temp = Path()
+  group:dict = {"test":[r"C:\Program Files (x86)\Microsoft Office\root\Office16\WINWORD.EXE"]}
+  p_temp = Path(r"C:\\")
   def __init__(self):
+    wshell = win32com.client.Dispatch("WScript.Shell")
     super().__init__()
     sp_exp = Qw.QSizePolicy.Policy.Expanding
-
     # ウィンドウタイトル設定
     self.setWindowTitle('グループ分け') 
 
@@ -81,8 +82,8 @@ class Config(Qw.QScrollArea):
 
     # チェックボックス形式
     #region
-    l = [str(p.resolve()) for p in self.p_temp.glob('**/*.exe')]
-    print(l)
+    l = [wshell.CreateShortcut(str(p.resolve())).TargetPath for p in self.p_temp.glob('**/*.lnk') if ".exe" in wshell.CreateShortcut(str(p.resolve())).TargetPath]
+    l = list(set(l))
 
     # チェックボックスの生成と設定
     self.checkboxes : list[Qw.QCheckBox] = []
@@ -109,7 +110,7 @@ class Config(Qw.QScrollArea):
       i.setCheckState(Qc.Qt.CheckState.Unchecked)
 
   def add(self):
-    self.group[self.tb_name.text()] = [i.file for i in self.checkboxes if i.isChecked()]
+    self.group[self.tb_name.text()] = [i.file[:i.file.rfind(".exe")+4] for i in self.checkboxes if i.isChecked()]
     print(self.group)
 
   def exp(self):
@@ -117,7 +118,7 @@ class Config(Qw.QScrollArea):
       self,      # 親ウィンドウ
       "複数ファイル選択",     # ダイアログタイトル
       "", # 初期位置（フォルダパス）
-      "実行ファイル (*.exe)"
+      "実行ファイル (*.lnk)"
       )
     self.group[self.tb_name.text()] = path[0]
     print(self.group)
