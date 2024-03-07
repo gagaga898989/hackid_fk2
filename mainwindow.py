@@ -108,7 +108,8 @@ class MainWindow(QMainWindow):
         #対応するアプリを開く
         #if isinstance(data, str):
         print(data)
-        subprocess.Popen(data)
+        for exe_path in data:
+           subprocess.Popen(exe_path)
     # keyを保存する関数
     def save_tasks(self):
         tasks = [self.task_list.item(i).text() for i in range(self.task_list.count())]
