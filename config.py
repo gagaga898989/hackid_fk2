@@ -1,9 +1,14 @@
 import win32com.client
+import win32ui
+import win32gui
+import win32api
+import win32con
 import sys
 import re
 from pathlib import Path
 import PySide6.QtCore as Qc
 import PySide6.QtWidgets as Qw
+import PySide6.QtGui as Qg
 import mainwindow as m
 import getpass
 import json
@@ -33,6 +38,17 @@ class Config(Qw.QScrollArea):
     button_layout = Qw.QHBoxLayout()
     button_layout.setAlignment(Qc.Qt.AlignmentFlag.AlignLeft) # 左寄せ
     main_layout.addLayout(button_layout) # メインレイアウトにボタンレイアウトを追加
+
+    model    = Qg.QStandardItemModel( 0, 1 )
+    self.listview = Qw.QListWidget()
+    self.listview.setSelectionRectVisible(True)
+    self.listview.setWrapping(True)
+    self.listview.setSelectionMode(Qw.QAbstractItemView.MultiSelection)
+    self.listview.setMinimumSize(500,500)
+    self.listview.setMaximumSize(10000,10000)
+    self.listview.setSizePolicy(sp_exp,sp_exp)
+    self.listview.setIconSize( Qc.QSize(32, 32) )
+    main_layout.addWidget( self.listview )
 
     #「グループを追加」ボタンの生成と設定
     self.btn_add = Qw.QPushButton('グループを追加')
@@ -92,21 +108,28 @@ class Config(Qw.QScrollArea):
     if re.search(r'.*\.[eE][xX][eE]', wshell.CreateShortcut(str(p.resolve())).TargetPath)]
     l = sorted(list(set(l)))
 
-    # チェックボックスの生成と設定
-    self.checkboxes : list[Qw.QCheckBox] = []
-    for file in l:
-      cb = Qw.QCheckBox(self)
-      cb.setText(file)
-      cb.file = file
-      cb.setCursor(Qc.Qt.CursorShape.PointingHandCursor)
-      self.checkboxes.append(cb)
-      main_layout.addWidget(cb)
+    # # チェックボックスの生成と設定
+    # self.checkboxes : list[Qw.QCheckBox] = []
+    # for file in l:
+    #   cb = Qw.QCheckBox(self)
+    #   cb.setText(file[file.rfind("\\")+1:])
+    #   cb.file = file
+    #   cb.setCursor(Qc.Qt.CursorShape.PointingHandCursor)
+    #   self.checkboxes.append(cb)
+    #   main_layout.addWidget(cb)
 
-    inner = central_widget
-    layout = main_layout
-    inner.setLayout(layout)
-    self.setWidget(inner)
-    # endregion
+    # inner = central_widget
+    # layout = main_layout
+    # inner.setLayout(layout)
+    # self.setWidget(inner)
+    # # endregion
+
+    for path in l:
+        # item = Qg.QStandardItem( path )
+        # item.setIcon(Qg.QIcon(Qw.QFileIconProvider().icon(Qc.QFileInfo(path))))
+        # model.setItem( model.rowCount(), 0, item )
+        # main_layout.addWidget( self.listview )
+      Qw.QListWidgetItem(Qw.QFileIconProvider().icon(Qc.QFileInfo(path)), path, self.listview)
 
   def Allcheck(self):
     for i in self.checkboxes:
@@ -131,7 +154,6 @@ class Config(Qw.QScrollArea):
       )
     self.group[self.tb_name.text()] = path[0]
     print(self.group)
-
 
 # 本体
 if __name__ == '__main__':
