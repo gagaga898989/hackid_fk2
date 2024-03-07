@@ -2,7 +2,8 @@ import subprocess
 import win32com.client
 import config as c
 import sys
-from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget,QLabel
+from PySide6.QtGui import QFont
 import json
 
 class MainWindow(QMainWindow):
@@ -14,6 +15,17 @@ class MainWindow(QMainWindow):
         # メインウィジェットを作成
         main_widget = QWidget()
         self.setCentralWidget(main_widget)
+
+        # QLabelを作成して、テキストを設定します
+        self.label = QLabel("複数同時起動アプリ", self)
+
+        # フォントを設定して、テキストの大きさを変更します
+        font = QFont()
+        font.setPointSize(50)  # フォントサイズを設定します
+        self.label.setFont(font)
+
+        # ラベルの位置とサイズを設定します
+        self.label.setGeometry(150, 0, 800, 300)
 
         # ボタン1を作成
         button1 = QPushButton("リスト作成")
@@ -29,6 +41,7 @@ class MainWindow(QMainWindow):
 
         # レイアウトを作成してボタンを下側に配置
         layout = QVBoxLayout()
+        layout.addWidget(self.label)
         layout.addStretch()  # ボタンを下側に移動するためにストレッチを追加
         layout.addWidget(button3)
         layout.addWidget(button1)
