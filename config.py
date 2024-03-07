@@ -125,10 +125,6 @@ class Config(Qw.QScrollArea):
     # # endregion
 
     for path in l:
-        # item = Qg.QStandardItem( path )
-        # item.setIcon(Qg.QIcon(Qw.QFileIconProvider().icon(Qc.QFileInfo(path))))
-        # model.setItem( model.rowCount(), 0, item )
-        # main_layout.addWidget( self.listview )
       Qw.QListWidgetItem(Qw.QFileIconProvider().icon(Qc.QFileInfo(path)), path, self.listview)
 
   def Allcheck(self):
@@ -140,7 +136,7 @@ class Config(Qw.QScrollArea):
       i.setCheckState(Qc.Qt.CheckState.Unchecked)
 
   def add(self):
-    self.group[self.tb_name.text()] = [i.file[:list(re.finditer(r'\.[eE][xX][eE]', i.file))[-1].end()+1] for i in self.checkboxes if i.isChecked()]
+    self.group[self.tb_name.text()] = [i.text() for i in self.listview.selectedItems()]
     print(self.group)
     with open("data.json", "w") as json_file:
         json.dump(self.group, json_file)
