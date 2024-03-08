@@ -134,7 +134,7 @@ class Config(Qw.QMainWindow):
   
   def closeEvent(self, event):
     print("a")
-    m.MainWindow().doing()
+    m.mw.doing()
 
 # 本体
 if __name__ == '__main__':

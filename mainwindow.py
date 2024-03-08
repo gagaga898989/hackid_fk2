@@ -8,6 +8,8 @@ import os
 
 class MainWindow(QMainWindow):
     def __init__(self):
+        global mw
+        mw = self
         super().__init__()
         self.setWindowTitle("Main Window")
         #win32com
