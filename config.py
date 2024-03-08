@@ -119,6 +119,7 @@ class Config(Qw.QMainWindow):
     print(self.group)
     with open("data.json", "w") as json_file:
         json.dump(self.group, json_file)
+    self.close()
 
   def exp(self):
     path = Qw.QFileDialog.getOpenFileNames(
