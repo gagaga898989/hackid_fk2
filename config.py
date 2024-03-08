@@ -45,7 +45,6 @@ class Config(Qw.QMainWindow):
 
     #リスト
     self.listview = Qw.QListWidget()
-    self.listview.setWrapping(True)
     self.listview.setResizeMode(Qw.QListWidget.ResizeMode.Adjust)
     self.listview.setSelectionMode(Qw.QAbstractItemView.MultiSelection)
     self.listview.setMinimumSize(250,100)
