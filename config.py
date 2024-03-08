@@ -79,8 +79,8 @@ class Config(Qw.QMainWindow):
 
     #「エクスプローラーで選択」ボタンの生成と設定
     self.btn_exp = Qw.QPushButton('エクスプローラーで選択')
-    self.btn_exp.setMinimumSize(70,20)
-    self.btn_exp.setMaximumSize(100,20)
+    self.btn_exp.setMinimumSize(120,20)
+    self.btn_exp.setMaximumSize(120,20)
     self.btn_exp.setSizePolicy(sp_exp,sp_exp)
     button_layout.addWidget(self.btn_exp)
     self.btn_exp.clicked.connect(self.exp)
