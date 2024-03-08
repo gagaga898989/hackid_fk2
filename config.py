@@ -6,6 +6,7 @@ import PySide6.QtCore as Qc
 import PySide6.QtWidgets as Qw
 import getpass
 import json
+import mainwindow as m
 
 # PySide6.QtWidgets.MainWindow を継承した MainWindow クラスの定義
 class Config(Qw.QMainWindow):
@@ -130,6 +131,10 @@ class Config(Qw.QMainWindow):
       )
     self.group[self.tb_name.text()] = path[0]
     print(self.group)
+　
+　def closeEvent(self, event):
+    print("a")
+    m.MainWindow().doing()
 
 # 本体
 if __name__ == '__main__':
