@@ -41,8 +41,8 @@ class Config(Qw.QScrollArea):
 
     model    = Qg.QStandardItemModel( 0, 1 )
     self.listview = Qw.QListWidget()
-    self.listview.setSelectionRectVisible(True)
-    self.listview.setWrapping(True)
+    # self.listview.setSelectionRectVisible(True)
+    # self.listview.setWrapping(True)
     self.listview.setSelectionMode(Qw.QAbstractItemView.MultiSelection)
     self.listview.setMinimumSize(500,500)
     self.listview.setMaximumSize(10000,10000)
@@ -112,12 +112,13 @@ class Config(Qw.QScrollArea):
       Qw.QListWidgetItem(Qw.QFileIconProvider().icon(Qc.QFileInfo(path)), path, self.listview)
 
   def Allcheck(self):
-    for i in self.checkboxes:
-      i.setCheckState(Qc.Qt.CheckState.Checked)
+    for i in range(self.listview.count()):
+      self.listview.item(i).setSelected(True)
 
   def Alluncheck(self):
-    for i in self.checkboxes:
-      i.setCheckState(Qc.Qt.CheckState.Unchecked)
+    for i in range(self.listview.count()):
+      self.listview.item(i).setSelected(False)
+
 
   def add(self):
     self.group[self.tb_name.text()] = [i.text() for i in self.listview.selectedItems()]
