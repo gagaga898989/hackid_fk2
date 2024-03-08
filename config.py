@@ -1,20 +1,14 @@
 import win32com.client
-import win32ui
-import win32gui
-import win32api
-import win32con
 import sys
 import re
 from pathlib import Path
 import PySide6.QtCore as Qc
 import PySide6.QtWidgets as Qw
-import PySide6.QtGui as Qg
-import mainwindow as m
 import getpass
 import json
 
 # PySide6.QtWidgets.MainWindow を継承した MainWindow クラスの定義
-class Config(Qw.QScrollArea):
+class Config(Qw.QMainWindow):
   user = getpass.getuser()
   group:dict = {}
   desktop = Path(f"C:\\Users\\{user}\\Desktop")
@@ -32,6 +26,7 @@ class Config(Qw.QScrollArea):
 
     # メインレイアウトの設定
     central_widget = Qw.QWidget(self)
+    self.setCentralWidget(central_widget)
     main_layout = Qw.QVBoxLayout(central_widget) # 要素を垂直配置
     main_layout.setAlignment(Qc.Qt.AlignmentFlag.AlignTop) # 上寄せ
     main_layout.setContentsMargins(15,10,10,10)
@@ -39,13 +34,21 @@ class Config(Qw.QScrollArea):
     button_layout.setAlignment(Qc.Qt.AlignmentFlag.AlignLeft) # 左寄せ
     main_layout.addLayout(button_layout) # メインレイアウトにボタンレイアウトを追加
 
-    model    = Qg.QStandardItemModel( 0, 1 )
+    # 入力フィールド
+    self.tb_name = Qw.QLineEdit('',self)
+    self.tb_name.setPlaceholderText('グループ名を入力')
+    self.tb_name.setMinimumSize(10,30)
+    self.tb_name.setMaximumHeight(30)
+    self.tb_name.setSizePolicy(sp_exp,sp_exp)
+    self.tb_name.setAcceptDrops(False)
+    main_layout.addWidget(self.tb_name)
+
+    #リスト
     self.listview = Qw.QListWidget()
-    # self.listview.setSelectionRectVisible(True)
-    # self.listview.setWrapping(True)
+    self.listview.setWrapping(True)
+    self.listview.setResizeMode(Qw.QListWidget.ResizeMode.Adjust)
     self.listview.setSelectionMode(Qw.QAbstractItemView.MultiSelection)
-    self.listview.setMinimumSize(500,500)
-    self.listview.setMaximumSize(10000,10000)
+    self.listview.setMinimumSize(250,100)
     self.listview.setSizePolicy(sp_exp,sp_exp)
     self.listview.setIconSize( Qc.QSize(32, 32) )
     main_layout.addWidget( self.listview )
@@ -90,14 +93,6 @@ class Config(Qw.QScrollArea):
     # self.lb_navi.setMaximumSize(100,15)
     # self.lb_navi.setSizePolicy(sp_exp,sp_exp)
     # main_layout.addWidget(self.lb_navi)
-
-    # 入力フィールド
-    self.tb_name = Qw.QLineEdit('',self)
-    self.tb_name.setPlaceholderText('グループ名を入力')
-    self.tb_name.setMinimumSize(10,10)
-    self.tb_name.setSizePolicy(sp_exp,sp_exp)
-    self.tb_name.setAcceptDrops(False)
-    main_layout.addWidget(self.tb_name)
 
     # チェックボックス形式
     #region
