@@ -117,14 +117,16 @@ class MainWindow(QMainWindow):
                 if reply == QMessageBox.Yes:
                     with open(f"{key}.json", "w") as file:
                         json.dump(value_list, file)
-                        self.run_commands()
+                        self.save_tasks()
+                        #self.run_commands()
                 else:
                     print("no")
             else:
                 with open(f"{key}.json", "w") as file:
                     json.dump(value_list, file)
                     self.task_list.addItem(key)
-                    self.run_commands()
+                    self.save_tasks()
+                    #self.run_commands()
 
     def run_commands(self):
         key = "test"
