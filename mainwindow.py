@@ -2,7 +2,7 @@ import subprocess
 import win32com.client
 import config as c
 import sys
-from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget,QLabel,QListWidget
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget,QLabel,QListWidget,QMessageBox
 from PySide6.QtGui import QFont
 import json
 import os
@@ -106,8 +106,6 @@ class MainWindow(QMainWindow):
         else:
             print(f"File '{file_name}' does not exist.")
         #対応するアプリを開く
-        #if isinstance(data, str):
-        print(data)
         for exe_path in data:
            subprocess.Popen(exe_path)
     # keyを保存する関数
