@@ -131,8 +131,8 @@ class Config(Qw.QMainWindow):
       )
     self.group[self.tb_name.text()] = path[0]
     print(self.group)
-　
-　def closeEvent(self, event):
+  
+  def closeEvent(self, event):
     print("a")
     m.MainWindow().doing()
 
