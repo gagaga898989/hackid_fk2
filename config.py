@@ -108,22 +108,6 @@ class Config(Qw.QScrollArea):
     if re.search(r'.*\.[eE][xX][eE]', wshell.CreateShortcut(str(p.resolve())).TargetPath)]
     l = sorted(list(set(l)))
 
-    # # チェックボックスの生成と設定
-    # self.checkboxes : list[Qw.QCheckBox] = []
-    # for file in l:
-    #   cb = Qw.QCheckBox(self)
-    #   cb.setText(file[file.rfind("\\")+1:])
-    #   cb.file = file
-    #   cb.setCursor(Qc.Qt.CursorShape.PointingHandCursor)
-    #   self.checkboxes.append(cb)
-    #   main_layout.addWidget(cb)
-
-    # inner = central_widget
-    # layout = main_layout
-    # inner.setLayout(layout)
-    # self.setWidget(inner)
-    # # endregion
-
     for path in l:
       Qw.QListWidgetItem(Qw.QFileIconProvider().icon(Qc.QFileInfo(path)), path, self.listview)
 
