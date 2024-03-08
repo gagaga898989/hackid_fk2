@@ -34,10 +34,6 @@ class MainWindow(QMainWindow):
         button1 = QPushButton("リスト作成")
         button1.clicked.connect(self.on_button1_clicked)
 
-        # ボタン2を作成
-        button2 = QPushButton("起動")
-        button2.clicked.connect(self.on_button2_clicked)
-
         # ボタン3を作成
         button3 = QPushButton("選択してるジャンルのアプリを起動する")
         button3.clicked.connect(self.on_button3_clicked)
@@ -53,7 +49,6 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.task_list)
         layout.addWidget(button3)
         layout.addWidget(button1)
-        layout.addWidget(button2)
 
         # メインウィジェットにレイアウトをセット
         main_widget.setLayout(layout)
@@ -77,10 +72,6 @@ class MainWindow(QMainWindow):
         #configを実行する
         self.w = c.Config()
         self.w.show()
-
-
-    def on_button2_clicked(self):
-        self.doing()
 
     def on_button3_clicked(self):
 
@@ -125,14 +116,16 @@ class MainWindow(QMainWindow):
                 if reply == QMessageBox.Yes:
                     with open(f"{key}.json", "w") as file:
                         json.dump(value_list, file)
-                        self.run_commands()
+                        self.save_tasks()
+                        #self.run_commands()
                 else:
                     print("no")
             else:
                 with open(f"{key}.json", "w") as file:
                     json.dump(value_list, file)
                     self.task_list.addItem(key)
-                    self.run_commands()
+                    self.save_tasks()
+                    #self.run_commands()
 
     def run_commands(self):
         key = self.task_list.selectedItems()[0].text()
