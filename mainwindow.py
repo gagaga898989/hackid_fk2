@@ -1,5 +1,4 @@
 import subprocess
-import win32com.client
 import config as c
 import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget,QLabel,QListWidget,QMessageBox
@@ -136,7 +135,7 @@ class MainWindow(QMainWindow):
                     self.run_commands()
 
     def run_commands(self):
-        key = "test"
+        key = self.task_list.selectedItems()[0].text()
         for value in self.dictionary_list[key]:
             if isinstance(value, str):
                 print(value)
