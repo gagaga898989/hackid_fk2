@@ -1,5 +1,6 @@
 import win32com.client
 import sys
+import os
 import re
 from pathlib import Path
 import PySide6.QtCore as Qc
@@ -87,27 +88,26 @@ class Config(Qw.QMainWindow):
     button_layout.addWidget(self.btn_exp)
     self.btn_exp.clicked.connect(self.exp)
 
-    # # ナビゲーション情報を表示するラベル
-    # self.init_navi_msg = \
-    #     "グループ化するexeファイルを選択"
-    # self.lb_navi = Qw.QLabel(self.init_navi_msg,self)
-    # self.lb_navi.setMinimumSize(100,15)
-    # self.lb_navi.setMaximumSize(100,15)
-    # self.lb_navi.setSizePolicy(sp_exp,sp_exp)
-    # main_layout.addWidget(self.lb_navi)
-
     # チェックボックス形式
-    #region
-    l = \
-    [wshell.CreateShortcut(str(p.resolve())).TargetPath for p in self.desktop.glob('**/*.lnk') \
-    if re.search(r'.*\.[eE][xX][eE]', wshell.CreateShortcut(str(p.resolve())).TargetPath)]\
-   +[wshell.CreateShortcut(str(p.resolve())).TargetPath for p in self.startmenu.glob('**/*.lnk') \
-    if re.search(r'.*\.[eE][xX][eE]', wshell.CreateShortcut(str(p.resolve())).TargetPath)]
-    l = sorted(list(set(l)))
-
+    if os.path.isfile("listdate.pickle"):
+      with open("listdate.pickle",'rb') as file:
+        l = pickle.load(file)
+    else:
+      l = \
+      [wshell.CreateShortcut(str(p.resolve())).TargetPath for p in self.desktop.glob('**/*.lnk') \
+      if re.search(r'.*\.[eE][xX][eE]', wshell.CreateShortcut(str(p.resolve())).TargetPath)]\
+      +[wshell.CreateShortcut(str(p.resolve())).TargetPath for p in self.startmenu.glob('**/*.lnk') \
+      if re.search(r'.*\.[eE][xX][eE]', wshell.CreateShortcut(str(p.resolve())).TargetPath)]
+      l = sorted(list(set(l)))
     for path in l:
       print(path)
       Qw.QListWidgetItem(Qw.QFileIconProvider().icon(Qc.QFileInfo(path)), path, self.listview)
+    self.save()
+
+  def save(self):
+    l = [self.listview.item(i).text() for i in range(self.listview.count())]
+    with open("listdate.pickle", mode='wb') as file:
+      pickle.dump(l, file)
 
   def Allcheck(self):
     for i in range(self.listview.count()):
@@ -116,7 +116,6 @@ class Config(Qw.QMainWindow):
   def Alluncheck(self):
     for i in range(self.listview.count()):
       self.listview.item(i).setSelected(False)
-
 
   def add(self):
     self.group[self.tb_name.text()] = [i.text() for i in self.listview.selectedItems()]
@@ -130,10 +129,10 @@ class Config(Qw.QMainWindow):
       self,      # 親ウィンドウ
       "複数ファイル選択",     # ダイアログタイトル
       "", # 初期位置（フォルダパス）
-      "実行ファイル (*.lnk)"
+      "実行ファイル (*.exe) ;; Allfile (*)"
       )
-    self.group[self.tb_name.text()] = path[0]
-    print(self.group)
+    for i in path:
+      Qw.QListWidgetItem(Qw.QFileIconProvider().icon(Qc.QFileInfo(i)), i, self.listview)
   
   def closeEvent(self, event):
     print("a")
@@ -147,8 +146,10 @@ class Config(Qw.QMainWindow):
   # ドロップ処理
   def dropEvent(self, e):
     urls = e.mimeData().urls()
-    url = urls[0].path()[1:].replace('/',"\\")
-    Qw.QListWidgetItem(Qw.QFileIconProvider().icon(Qc.QFileInfo(url)), url, self.listview)
+    for i in urls:
+      url = i.path()[1:].replace('/',"\\")
+      Qw.QListWidgetItem(Qw.QFileIconProvider().icon(Qc.QFileInfo(url)), url, self.listview)
+    self.save()
 
 # 本体
 if __name__ == '__main__':
