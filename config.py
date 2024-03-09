@@ -7,6 +7,7 @@ import PySide6.QtWidgets as Qw
 import getpass
 import json
 import mainwindow as m
+import pickle
 
 # PySide6.QtWidgets.MainWindow を継承した MainWindow クラスの定義
 class Config(Qw.QMainWindow):
@@ -20,6 +21,7 @@ class Config(Qw.QMainWindow):
     sp_exp = Qw.QSizePolicy.Policy.Expanding
     # ウィンドウタイトル設定
     self.setWindowTitle('グループ分け') 
+    self.setAcceptDrops(True)
 
     # ウィンドウのサイズ(640x240)と位置(X=100,Y=50)の設定
     self.setGeometry(100, 50, 640, 240)
@@ -104,6 +106,7 @@ class Config(Qw.QMainWindow):
     l = sorted(list(set(l)))
 
     for path in l:
+      print(path)
       Qw.QListWidgetItem(Qw.QFileIconProvider().icon(Qc.QFileInfo(path)), path, self.listview)
 
   def Allcheck(self):
@@ -135,6 +138,17 @@ class Config(Qw.QMainWindow):
   def closeEvent(self, event):
     print("a")
     m.mw.doing()
+
+  # ドラッグ処理
+  def dragEnterEvent(self,e):
+    if e.mimeData().hasUrls():
+        e.accept()
+
+  # ドロップ処理
+  def dropEvent(self, e):
+    urls = e.mimeData().urls()
+    url = urls[0].path()[1:].replace('/',"\\")
+    Qw.QListWidgetItem(Qw.QFileIconProvider().icon(Qc.QFileInfo(url)), url, self.listview)
 
 # 本体
 if __name__ == '__main__':
