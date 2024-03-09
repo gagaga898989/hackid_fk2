@@ -3,8 +3,10 @@ import config as c
 import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget,QLabel,QListWidget,QMessageBox
 from PySide6.QtGui import QFont
+from PySide6.QtCore import Qt  # Qtモジュールをインポートする
 import json
 import os
+import random
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -39,6 +41,22 @@ class MainWindow(QMainWindow):
         # ボタン3を作成
         button3 = QPushButton("選択してるジャンルのアプリを起動する")
         button3.clicked.connect(self.on_button3_clicked)
+        #おみくじ関係
+        # QLabelを作成して、テキストを設定します
+        self.sabu_label = QLabel("Miniゲーム:おみくじ", self)
+
+        # フォントを設定して、テキストの大きさを変更します
+        font = QFont()
+        font.setPointSize(30)  # フォントサイズを設定します
+        self.sabu_label.setFont(font)
+        self.sabu_label.setAlignment(Qt.AlignmentFlag.AlignCenter) 
+
+        
+        self.result_label = QLabel('ここに結果が表示されます', self)
+        self.result_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.draw_button = QPushButton('おみくじを引く', self)
+        self.draw_button.clicked.connect(self.drawFortune)
         
         # タスクを表示するリストウィジェット
         self.task_list = QListWidget()
@@ -48,6 +66,9 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout()
         layout.addWidget(self.label)
         layout.addStretch()  # ボタンを下側に移動するためにストレッチを追加
+        layout.addWidget(self.sabu_label)
+        layout.addWidget(self.result_label)
+        layout.addWidget(self.draw_button)
         layout.addWidget(self.task_list)
         layout.addWidget(button3)
         layout.addWidget(button1)
@@ -59,6 +80,10 @@ class MainWindow(QMainWindow):
         self.setFixedSize(800, 600)
 
         self.load_tasks()
+    def drawFortune(self):
+        fortunes = ['大吉', '中吉', '小吉', '吉', '末吉', '凶', '大凶']
+        fortune = random.choice(fortunes)
+        self.result_label.setText(fortune)
     # keyをロードする関数
     def load_tasks(self):
         try:
