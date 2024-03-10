@@ -194,6 +194,22 @@ class MainWindow(QMainWindow):
             if isinstance(value, str):
                 print(value)
                 subprocess.Popen(value)
+    def get_application_names(*exe_paths):
+        application_names = []
+        for exe_path in exe_paths:
+            # ファイルパスを分割してリストにする
+            parts = exe_path.split(os.sep)
+            try:
+            # ファイルパスから\\Applicationのインデックスを取得する
+                app_index = parts.index('C:')
+                # アプリケーション名の直前の要素を取得
+                app_name = parts[app_index + 2]
+                application_names.append(app_name)
+            except ValueError:
+            # 'Application'が見つからない場合は例外処理を行う
+                print(f"'Application'が {exe_path} で見つかりませんでした。")
+                continue
+        return application_names
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
