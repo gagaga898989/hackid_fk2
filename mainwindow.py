@@ -1,7 +1,7 @@
 import subprocess
 import config as c
 import sys
-from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget,QLabel,QListWidget,QMessageBox
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget,QLabel,QListWidget,QMessageBox,QFrame
 from PySide6.QtGui import QFont
 from PySide6.QtCore import Qt  # Qtモジュールをインポートする
 import json
@@ -41,6 +41,7 @@ class MainWindow(QMainWindow):
         # ボタン3を作成
         button3 = QPushButton("選択してるジャンルのアプリを起動する")
         button3.clicked.connect(self.on_button3_clicked)
+        
         #おみくじ関係
         # QLabelを作成して、テキストを設定します
         self.sabu_label = QLabel("Miniゲーム:おみくじ", self)
@@ -51,12 +52,24 @@ class MainWindow(QMainWindow):
         self.sabu_label.setFont(font)
         self.sabu_label.setAlignment(Qt.AlignmentFlag.AlignCenter) 
 
-        
-        self.result_label = QLabel('ここに結果が表示されます', self)
+        # フレームの作成
+        self.result_frame = QFrame(self)
+        self.result_frame.setFrameShape(QFrame.Box)  # 枠線のスタイルを指定
+        self.result_frame.setLineWidth(2)  # 枠線の太さを指定
+
+        # ラベルの作成
+        self.result_label = QLabel('ここに結果が表示されます', self.result_frame)
         self.result_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
+        # フレーム内のレイアウトを設定
+        frame_layout = QVBoxLayout()
+        frame_layout.addWidget(self.result_label)
+        self.result_frame.setLayout(frame_layout)
+
+        # ボタンの作成
         self.draw_button = QPushButton('おみくじを引く', self)
         self.draw_button.clicked.connect(self.drawFortune)
+
         
         # タスクを表示するリストウィジェット
         self.task_list = QListWidget()
@@ -67,7 +80,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.label)
         layout.addStretch()  # ボタンを下側に移動するためにストレッチを追加
         layout.addWidget(self.sabu_label)
-        layout.addWidget(self.result_label)
+        layout.addWidget(self.result_frame)
         layout.addWidget(self.draw_button)
         layout.addWidget(self.task_list)
         layout.addWidget(button3)
@@ -78,6 +91,28 @@ class MainWindow(QMainWindow):
 
         # ウィンドウのサイズを固定
         self.setFixedSize(800, 600)
+
+        
+        # スタイルシートを適用
+        self.setStyleSheet("""
+            #resultFrame {
+                background-color: #f0f0f0;
+                border: 2px solid #ccc;
+                border-radius: 10px;
+                padding: 20px;
+            }
+            QPushButton {
+                background-color: #007bff;
+                color: #fff;
+                font-size: 16px;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: #0056b3;
+            }
+        """)
 
         self.load_tasks()
     def drawFortune(self):
