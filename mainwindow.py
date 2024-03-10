@@ -194,7 +194,8 @@ class MainWindow(QMainWindow):
             if isinstance(value, str):
                 print(value)
                 subprocess.Popen(value)
-    def get_application_names(*exe_paths):
+
+    def get_application_names(self,exe_paths):
         application_names = []
         for exe_path in exe_paths:
             # ファイルパスを分割してリストにする

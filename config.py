@@ -38,6 +38,19 @@ class Config(Qw.QMainWindow):
     button_layout.setAlignment(Qc.Qt.AlignmentFlag.AlignLeft) # 左寄せ
     main_layout.addLayout(button_layout) # メインレイアウトにボタンレイアウトを追加
 
+    self.setStyleSheet("""
+      QPushButton {
+        background-color: #007bff;
+        color: #fff;
+      }
+      QPushButton:hover {
+        background-color: #0056b3;
+      }
+      QLineEdit {
+        background-color: #aaffff;
+      }
+    """)
+
     # 入力フィールド
     self.tb_name = Qw.QLineEdit('',self)
     self.tb_name.setPlaceholderText('グループ名を入力')
