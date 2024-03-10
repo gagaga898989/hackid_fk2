@@ -88,6 +88,14 @@ class Config(Qw.QMainWindow):
     button_layout.addWidget(self.btn_exp)
     self.btn_exp.clicked.connect(self.exp)
 
+    #「候補から削除」ボタンの生成と設定
+    self.btn_delete = Qw.QPushButton('候補から削除')
+    self.btn_delete.setMinimumSize(120,20)
+    self.btn_delete.setMaximumSize(120,20)
+    self.btn_delete.setSizePolicy(sp_exp,sp_exp)
+    button_layout.addWidget(self.btn_delete)
+    self.btn_delete.clicked.connect(self.delete)
+
     # チェックボックス形式
     if os.path.isfile("listdate.pickle"):
       with open("listdate.pickle",'rb') as file:
@@ -133,6 +141,12 @@ class Config(Qw.QMainWindow):
       )
     for i in path:
       Qw.QListWidgetItem(Qw.QFileIconProvider().icon(Qc.QFileInfo(i)), i, self.listview)
+
+  def delete(self):
+    deletelist = [self.listview.row(i) for i in self.listview.selectedItems()]
+    for i in range(len(deletelist)):
+      self.listview.takeItem(deletelist[i]-i)
+    self.save()
   
   def closeEvent(self, event):
     print("a")
