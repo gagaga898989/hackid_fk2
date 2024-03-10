@@ -170,7 +170,6 @@ class MainWindow(QMainWindow):
     def doing(self):
         self.dictionary_list = c.Config.group
         for key, value_list in c.Config.group.items():
-            self.save_tasks()
             if os.path.exists(f"{key}.json"):
                 reply = QMessageBox.question(self, 'key名が重複しています',
                                     "内容を上書きしますか？",
