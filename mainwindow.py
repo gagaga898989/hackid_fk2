@@ -36,7 +36,7 @@ class MainWindow(QMainWindow):
         button1.clicked.connect(self.on_button1_clicked)
 
         # ボタン3を作成
-        button3 = QPushButton("選択してるジャンルのアプリを起動する")
+        button3 = QPushButton("選択しているジャンルのアプリを起動する")
         button3.clicked.connect(self.on_button3_clicked)
         
         #おみくじ関係
@@ -101,6 +101,10 @@ class MainWindow(QMainWindow):
         
         # スタイルシートを適用
         self.setStyleSheet("""
+            QWidget {
+                background-color: #001933;
+                color: #fff;
+            } 
             #resultFrame {
                 background-color: #f0f0f0;
                 border: 2px solid #ccc;
@@ -117,6 +121,10 @@ class MainWindow(QMainWindow):
             }
             QPushButton:hover {
                 background-color: #0056b3;
+            }
+            QListWidget {
+                background-color: #fff;
+                color: #000;
             }
         """)
         # ToDoリストのアイテムの文字の大きさを変更
@@ -203,7 +211,6 @@ class MainWindow(QMainWindow):
                     with open(f"{key}.json", "w") as file:
                         json.dump(value_list, file)
                         self.save_tasks()
-                        #self.run_commands()
                 else:
                     print("no")
             else:

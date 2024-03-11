@@ -25,7 +25,7 @@ class Config(Qw.QMainWindow):
     self.setAcceptDrops(True)
 
     # ウィンドウのサイズ(640x240)と位置(X=100,Y=50)の設定
-    self.setGeometry(100, 50, 640, 240)
+    self.setGeometry(100, 50, 850, 500)
     self.setMinimumSize(320,200) 
 
     # メインレイアウトの設定
@@ -51,7 +51,11 @@ class Config(Qw.QMainWindow):
         background-color: #0056b3;
       }
       QLineEdit {
-        background-color: #80aaff;
+        background-color: #fff;
+        color: #000
+      }
+      QListWidget{
+        background-color: #fff;
         color: #000
       }
     """)
@@ -76,7 +80,6 @@ class Config(Qw.QMainWindow):
 
     #「グループを追加」ボタンの生成と設定
     self.btn_add = Qw.QPushButton('グループを追加')
-    self.btn_add.setMinimumSize(50,20)
     self.btn_add.setMaximumSize(100,20)
     self.btn_add.setSizePolicy(sp_exp,sp_exp)
     button_layout.addWidget(self.btn_add)
@@ -84,7 +87,6 @@ class Config(Qw.QMainWindow):
 
     #「全選択」ボタンの生成と設定
     self.btn_Allcheck = Qw.QPushButton('全選択')
-    self.btn_Allcheck.setMinimumSize(50,20)
     self.btn_Allcheck.setMaximumSize(100,20)
     self.btn_Allcheck.setSizePolicy(sp_exp,sp_exp)
     button_layout.addWidget(self.btn_Allcheck)
@@ -92,23 +94,20 @@ class Config(Qw.QMainWindow):
 
     #「全選択解除」ボタンの生成と設定
     self.btn_Alluncheck = Qw.QPushButton('全選択解除')
-    self.btn_Alluncheck.setMinimumSize(50,20)
     self.btn_Alluncheck.setMaximumSize(100,20)
     self.btn_Alluncheck.setSizePolicy(sp_exp,sp_exp)
     button_layout.addWidget(self.btn_Alluncheck)
     self.btn_Alluncheck.clicked.connect(self.Alluncheck)
 
     #「エクスプローラーで選択」ボタンの生成と設定
-    self.btn_exp = Qw.QPushButton('エクスプローラーで選択')
-    self.btn_exp.setMinimumSize(120,20)
-    self.btn_exp.setMaximumSize(120,20)
+    self.btn_exp = Qw.QPushButton('エクスプローラーから項目を追加')
+    self.btn_exp.setMaximumSize(200,20)
     self.btn_exp.setSizePolicy(sp_exp,sp_exp)
     button_layout.addWidget(self.btn_exp)
     self.btn_exp.clicked.connect(self.exp)
 
     #「候補から削除」ボタンの生成と設定
     self.btn_delete = Qw.QPushButton('候補から削除')
-    self.btn_delete.setMinimumSize(120,20)
     self.btn_delete.setMaximumSize(120,20)
     self.btn_delete.setSizePolicy(sp_exp,sp_exp)
     button_layout.addWidget(self.btn_delete)
