@@ -15,7 +15,7 @@ class Config(Qw.QMainWindow):
   user = getpass.getuser()
   group:dict = {}
   desktop = Path(f"C:\\Users\\{user}\\Desktop")
-  startmenu = Path(f"C:\ProgramData\Microsoft\Windows\Start Menu\Programs")
+  startmenu = Path(f"C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs")
   def __init__(self):
     wshell = win32com.client.Dispatch("WScript.Shell")
     super().__init__()
