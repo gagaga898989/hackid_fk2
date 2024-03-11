@@ -39,6 +39,10 @@ class Config(Qw.QMainWindow):
     main_layout.addLayout(button_layout) # メインレイアウトにボタンレイアウトを追加
 
     self.setStyleSheet("""
+      QWidget {
+      background-color: #001933;
+      color: #fff;
+      } 
       QPushButton {
         background-color: #007bff;
         color: #fff;
@@ -47,7 +51,8 @@ class Config(Qw.QMainWindow):
         background-color: #0056b3;
       }
       QLineEdit {
-        background-color: #aaffff;
+        background-color: #80aaff;
+        color: #000
       }
     """)
 
