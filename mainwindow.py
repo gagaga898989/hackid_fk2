@@ -73,6 +73,10 @@ class MainWindow(QMainWindow):
         
         # タスクを表示するリストウィジェット
         self.task_list = QListWidget()
+        
+        #リスト定義の削除ボタン
+        add_button2 = QPushButton('リスト削除')
+        add_button2.clicked.connect(self.delete_todo)
 
 
         # レイアウトを作成してボタンを下側に配置
@@ -83,6 +87,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.result_frame)
         layout.addWidget(self.draw_button)
         layout.addWidget(self.task_list)
+        layout.addWidget(add_button2)
         layout.addWidget(button3)
         layout.addWidget(button1)
 
@@ -115,6 +120,23 @@ class MainWindow(QMainWindow):
         """)
 
         self.load_tasks()
+    #リスト削除
+    def delete_todo(self, item):
+        selected_task = self.task_list.currentItem().text()
+        print("Selected Task:", selected_task)
+        # ユーザーからキーを入力
+        key = selected_task
+        # 選択されたToDoアイテムを削除
+        for item in self.task_list.selectedItems():
+            self.task_list.takeItem(self.task_list.row(item))
+        # リストを保存
+        self.save_tasks()
+        file_path = f"{key}.json"
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            print(f"JSON file '{file_path}' deleted successfully.")
+        else:
+            print(f"JSON file '{file_path}' does not exist.")
     def drawFortune(self):
         fortunes = ['大吉', '中吉', '小吉', '吉', '末吉', '凶', '大凶']
         fortune = random.choice(fortunes)
