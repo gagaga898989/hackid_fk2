@@ -90,7 +90,7 @@ class MainWindow(QMainWindow):
         main_widget.setLayout(layout)
 
         # ウィンドウのサイズを固定
-        self.setFixedSize(800, 600)
+        self.setFixedSize(800, 700)
 
         
         # スタイルシートを適用
@@ -186,6 +186,9 @@ class MainWindow(QMainWindow):
                     json.dump(value_list, file)
                     self.task_list.addItem(key)
                     self.save_tasks()
+                    exe_paths = value_list
+                    name = self.get_application_names(*exe_paths)
+                    print(name)
                     #self.run_commands()
 
     def run_commands(self):
@@ -194,8 +197,7 @@ class MainWindow(QMainWindow):
             if isinstance(value, str):
                 print(value)
                 subprocess.Popen(value)
-
-    def get_application_names(self,exe_paths):
+    def get_application_names(self,*exe_paths):
         application_names = []
         for exe_path in exe_paths:
             # ファイルパスを分割してリストにする
