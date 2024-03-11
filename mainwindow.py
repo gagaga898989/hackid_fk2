@@ -1,7 +1,7 @@
 import subprocess
 import config as c
 import sys
-from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget,QLabel,QListWidget,QMessageBox,QFrame
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget,QLabel,QListWidget,QMessageBox,QFrame,QHBoxLayout
 from PySide6.QtGui import QFont
 from PySide6.QtCore import Qt  # Qtモジュールをインポートする
 import json
@@ -84,9 +84,13 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.result_frame)
         layout.addWidget(self.draw_button)
         layout.addWidget(self.task_list)
-        layout.addWidget(add_button2)
-        layout.addWidget(button3)
-        layout.addWidget(button1)
+
+        sabu_layout = QHBoxLayout()
+        sabu_layout.addWidget(add_button2)
+        sabu_layout.addWidget(button3)
+        sabu_layout.addWidget(button1)
+
+        layout.addLayout(sabu_layout)
 
         # メインウィジェットにレイアウトをセット
         main_widget.setLayout(layout)
@@ -115,6 +119,8 @@ class MainWindow(QMainWindow):
                 background-color: #0056b3;
             }
         """)
+        # ToDoリストのアイテムの文字の大きさを変更
+        self.task_list.setStyleSheet("font-size: 16px;")
 
         self.load_tasks()
     #リスト削除
