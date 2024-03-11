@@ -31,9 +31,6 @@ class MainWindow(QMainWindow):
         # ラベルの位置とサイズを設定します
         self.label.setGeometry(150, 0, 800, 300)
 
-        button = QPushButton('Click me!')
-        button.setFixedSize(100, 50)  # 幅100、高さ50に設定
-
         # ボタン1を作成
         button1 = QPushButton("リスト作成")
         button1.clicked.connect(self.on_button1_clicked)
@@ -95,7 +92,7 @@ class MainWindow(QMainWindow):
         main_widget.setLayout(layout)
 
         # ウィンドウのサイズを固定
-        self.setFixedSize(800, 700)
+        self.setFixedSize(800, 600)
 
         
         # スタイルシートを適用
