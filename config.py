@@ -51,13 +51,20 @@ class Config(Qw.QMainWindow):
       }
       QLineEdit {
         background-color: #fff;
-        color: #000
+        color: #000;
       }
       QListWidget{
         background-color: #fff;
-        color: #000
+        color: #000;
+      }
+      QLabel{
+        color: #ff0000;
       }
     """)
+
+    # QLabelを作成して、テキストを設定します
+    self.label = Qw.QLabel("", self)
+    main_layout.addWidget(self.label)
 
     # 入力フィールド
     self.tb_name = Qw.QLineEdit('',self)
@@ -144,12 +151,16 @@ class Config(Qw.QMainWindow):
   def add(self):
     key = self.tb_name.text()
     d = m.mw.taskdic
+    if key == "":
+      self.label.setText("key名を入力してください")
+      return
+    if self.listview.selectedItems() == []:
+      self.label.setText("ファイルが選択されていません")
     if key in d:
       reply = Qw.QMessageBox.question(self, 'key名が重複しています',
               "内容を上書きしますか？",
               Qw.QMessageBox.Yes | Qw.QMessageBox.No)
       if reply == Qw.QMessageBox.No:
-        print("no")
         return
       else:
         m.mw.task_list.takeItem(m.mw.task_list.row(m.mw.task_list.findItems(key,Qc.Qt.MatchCaseSensitive)[0]))
@@ -157,7 +168,7 @@ class Config(Qw.QMainWindow):
     d[key] = [i.text() for i in self.listview.selectedItems()]
     with open("taskdata.pickle", "wb") as f:
       pickle.dump(d, f)
-    self.close()
+    self.label.setText("")
     m.mw.task_list.addItem(f'{key}')
 
   def exp(self):

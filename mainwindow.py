@@ -68,30 +68,38 @@ class MainWindow(QMainWindow):
         self.draw_button = QPushButton('おみくじを引く', self)
         self.draw_button.clicked.connect(self.drawFortune)
 
-        
         # タスクを表示するリストウィジェット
         self.task_list = QListWidget()
+        self.task_list.setMaximumSize(200,400)
         self.task_list.itemDoubleClicked.connect(self.doubleclicked)
+        self.task_list.currentItemChanged.connect(self.about)
+
+        # 詳細表示
+        self.detail = QListWidget()
         
         #リスト定義の削除ボタン
         add_button2 = QPushButton('リスト削除')
         add_button2.clicked.connect(self.delete_todo)
 
 
-        # レイアウトを作成してボタンを下側に配置
+        # レイアウトを作成してリストを配置
         layout = QVBoxLayout()
         layout.addWidget(self.label)
         layout.addStretch()  # ボタンを下側に移動するためにストレッチを追加
         layout.addWidget(self.sabu_label)
         layout.addWidget(self.result_frame)
         layout.addWidget(self.draw_button)
-        layout.addWidget(self.task_list)
+
+        list_layout = QHBoxLayout()
+        list_layout.addWidget(self.task_list)
+        list_layout.addWidget(self.detail)
 
         sabu_layout = QHBoxLayout()
         sabu_layout.addWidget(add_button2)
         sabu_layout.addWidget(button3)
         sabu_layout.addWidget(button1)
 
+        layout.addLayout(list_layout)
         layout.addLayout(sabu_layout)
 
         # メインウィジェットにレイアウトをセット
@@ -184,6 +192,11 @@ class MainWindow(QMainWindow):
         #対応するアプリを開く
         for exe_path in self.taskdic[selected_task]:
            subprocess.Popen(exe_path)
+
+    def about(self,now,before):
+        self.detail.clear()
+        for i in self.taskdic[now.text()]:
+            self.detail.addItem(i[i.rfind("\\")+1:])
 
     def get_application_names(self,*exe_paths):
         application_names = []
