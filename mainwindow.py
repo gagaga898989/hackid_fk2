@@ -136,7 +136,8 @@ class MainWindow(QMainWindow):
         selected_task = self.task_list.currentItem().text()
         print("Selected Task:", selected_task)
         # ユーザーからキーを入力
-        key = selected_task
+        task_string = selected_task
+        key = self.extract_key(task_string)
         # 選択されたToDoアイテムを削除
         for item in self.task_list.selectedItems():
             self.task_list.takeItem(self.task_list.row(item))
@@ -182,7 +183,8 @@ class MainWindow(QMainWindow):
         selected_task = self.task_list.currentItem().text()
         print("Selected Task:", selected_task)
         # ユーザーからキーを入力
-        key = selected_task
+        task_string = selected_task
+        key = self.extract_key(task_string)
         file_name = f"{key}.json"
         if os.path.exists(file_name):
             with open(file_name, "r") as file:
@@ -204,23 +206,24 @@ class MainWindow(QMainWindow):
         self.dictionary_list = c.Config.group
         for key, value_list in c.Config.group.items():
             if os.path.exists(f"{key}.json"):
-                reply = QMessageBox.question(self, 'key名が重複しています',
-                                    "内容を上書きしますか？",
-                                    QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-                if reply == QMessageBox.Yes:
-                    with open(f"{key}.json", "w") as file:
-                        json.dump(value_list, file)
-                        self.save_tasks()
-                else:
+                
+                # reply = QMessageBox.question(self, 'key名が重複しています',
+                #                     "内容を上書きしますか？",
+                #                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+                # if reply == QMessageBox.Yes:
+                #     with open(f"{key}.json", "w") as file:
+                #         json.dump(value_list, file)
+                #         self.save_tasks()
+                # else:
                     print("no")
             else:
                 with open(f"{key}.json", "w") as file:
                     json.dump(value_list, file)
-                    self.task_list.addItem(key)
-                    self.save_tasks()
                     exe_paths = value_list
                     name = self.get_application_names(*exe_paths)
                     print(name)
+                    self.task_list.addItem(f'定義名{key}:アプリ名{name}')
+                    self.save_tasks()
                     #self.run_commands()
 
     def run_commands(self):
@@ -245,6 +248,15 @@ class MainWindow(QMainWindow):
                 print(f"'Application'が {exe_path} で見つかりませんでした。")
                 continue
         return application_names
+    def extract_key(self,task_string):
+        # 文字列を','で分割し、最初の要素を取得します
+        # この要素は'リスト{key}'の形式です
+        first_part = task_string.split(',')[0]
+
+        # 'リスト'と'}'の間にある文字列を取得し、'リスト'を削除してkeyだけを取り出します
+        key = first_part.split('定義名')[1].split(':')[0]
+    
+        return key
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
