@@ -6,7 +6,6 @@ from pathlib import Path
 import PySide6.QtCore as Qc
 import PySide6.QtWidgets as Qw
 import getpass
-import json
 import mainwindow as m
 import pickle
 
@@ -114,8 +113,8 @@ class Config(Qw.QMainWindow):
     self.btn_delete.clicked.connect(self.delete)
 
     # チェックボックス形式
-    if os.path.isfile("listdate.pickle"):
-      with open("listdate.pickle",'rb') as file:
+    if os.path.isfile("listdata.pickle"):
+      with open("listdata.pickle",'rb') as file:
         l = pickle.load(file)
     else:
       l = \
@@ -131,7 +130,7 @@ class Config(Qw.QMainWindow):
 
   def save(self):
     l = [self.listview.item(i).text() for i in range(self.listview.count())]
-    with open("listdate.pickle", mode='wb') as file:
+    with open("listdata.pickle", mode='wb') as file:
       pickle.dump(l, file)
 
   def Allcheck(self):
@@ -143,11 +142,23 @@ class Config(Qw.QMainWindow):
       self.listview.item(i).setSelected(False)
 
   def add(self):
-    self.group[self.tb_name.text()] = [i.text() for i in self.listview.selectedItems()]
-    print(self.group)
-    with open("data.json", "w") as json_file:
-        json.dump(self.group, json_file)
+    key = self.tb_name.text()
+    d = m.mw.taskdic
+    if key in d:
+      reply = Qw.QMessageBox.question(self, 'key名が重複しています',
+              "内容を上書きしますか？",
+              Qw.QMessageBox.Yes | Qw.QMessageBox.No)
+      if reply == Qw.QMessageBox.No:
+        print("no")
+        return
+      else:
+        m.mw.task_list.takeItem(m.mw.task_list.row(m.mw.task_list.findItems(key,Qc.Qt.MatchCaseSensitive)[0]))
+        del d[key]
+    d[key] = [i.text() for i in self.listview.selectedItems()]
+    with open("taskdata.pickle", "wb") as f:
+      pickle.dump(d, f)
     self.close()
+    m.mw.task_list.addItem(f'{key}')
 
   def exp(self):
     path = Qw.QFileDialog.getOpenFileNames(
@@ -164,10 +175,6 @@ class Config(Qw.QMainWindow):
     for i in range(len(deletelist)):
       self.listview.takeItem(deletelist[i]-i)
     self.save()
-  
-  def closeEvent(self, event):
-    print("a")
-    m.mw.doing()
 
   # ドラッグ処理
   def dragEnterEvent(self,e):

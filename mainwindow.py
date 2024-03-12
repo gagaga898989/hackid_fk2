@@ -4,14 +4,15 @@ import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget,QLabel,QListWidget,QMessageBox,QFrame,QHBoxLayout
 from PySide6.QtGui import QFont
 from PySide6.QtCore import Qt  # Qtモジュールをインポートする
-import json
 import os
 import random
+import pickle
 
 class MainWindow(QMainWindow):
     def __init__(self):
         global mw
         mw = self
+        self.taskdic = {}
         super().__init__()
         self.setWindowTitle("Main Window")
         #win32com
@@ -70,6 +71,7 @@ class MainWindow(QMainWindow):
         
         # タスクを表示するリストウィジェット
         self.task_list = QListWidget()
+        self.task_list.itemDoubleClicked.connect(self.doubleclicked)
         
         #リスト定義の削除ボタン
         add_button2 = QPushButton('リスト削除')
@@ -135,34 +137,27 @@ class MainWindow(QMainWindow):
     def delete_todo(self, item):
         selected_task = self.task_list.currentItem().text()
         print("Selected Task:", selected_task)
-        # ユーザーからキーを入力
-        task_string = selected_task
-        key = self.extract_key(task_string)
         # 選択されたToDoアイテムを削除
         for item in self.task_list.selectedItems():
             self.task_list.takeItem(self.task_list.row(item))
+        del self.taskdic[selected_task]
+        print(self.taskdic)
         # リストを保存
         self.save_tasks()
-        file_path = f"{key}.json"
-        if os.path.exists(file_path):
-            os.remove(file_path)
-            print(f"JSON file '{file_path}' deleted successfully.")
-        else:
-            print(f"JSON file '{file_path}' does not exist.")
+
     def drawFortune(self):
         fortunes = ['大吉', '中吉', '小吉', '吉', '末吉', '凶', '大凶']
         fortune = random.choice(fortunes)
         self.result_label.setText(fortune)
+
     # keyをロードする関数
     def load_tasks(self):
-        try:
-            with open('tasks.json', 'r') as file:
-                tasks = json.load(file)
-                print(tasks)
-                for task in tasks:
-                    self.task_list.addItem(task)
-        except FileNotFoundError:
-            pass
+        if os.path.isfile("taskdata.pickle"):
+          with open("taskdata.pickle",'rb') as f:
+            self.taskdic = pickle.load(f)
+          keys = self.taskdic.keys()
+          for i in keys:
+            self.task_list.addItem(f'{i}')
 
     def on_button1_clicked(self):
         #configを実行する
@@ -170,93 +165,25 @@ class MainWindow(QMainWindow):
         self.w.show()
 
     def on_button3_clicked(self):
-
-        # JSONファイルからデータを読み込む
-        #with open("data.json", "r") as json_file:
-            #loaded_data = json.load(json_file)
-
-        # 読み込んだデータを反映する
-        #self.dictionary_list = loaded_data
-        #print(loaded_data)
-        #self.run_commands()
         # クリックされたToDoリストの要素を取得する関数
         selected_task = self.task_list.currentItem().text()
         print("Selected Task:", selected_task)
-        # ユーザーからキーを入力
-        task_string = selected_task
-        key = self.extract_key(task_string)
-        file_name = f"{key}.json"
-        if os.path.exists(file_name):
-            with open(file_name, "r") as file:
-                data = json.load(file)
-            print("File contents:", data)
-        else:
-            print(f"File '{file_name}' does not exist.")
         #対応するアプリを開く
-        for exe_path in data:
+        for exe_path in self.taskdic[selected_task]:
            subprocess.Popen(exe_path)
+
     # keyを保存する関数
     def save_tasks(self):
-        tasks = [self.task_list.item(i).text() for i in range(self.task_list.count())]
-        with open('tasks.json', 'w') as file:
-            json.dump(tasks, file)
+        with open("taskdata.pickle", "wb") as f:
+            pickle.dump(self.taskdic, f)
 
-    
-    def doing(self):
-        self.dictionary_list = c.Config.group
-        for key, value_list in c.Config.group.items():
-            if os.path.exists(f"{key}.json"):
-                
-                # reply = QMessageBox.question(self, 'key名が重複しています',
-                #                     "内容を上書きしますか？",
-                #                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-                # if reply == QMessageBox.Yes:
-                #     with open(f"{key}.json", "w") as file:
-                #         json.dump(value_list, file)
-                #         self.save_tasks()
-                # else:
-                    print("no")
-            else:
-                with open(f"{key}.json", "w") as file:
-                    json.dump(value_list, file)
-                    exe_paths = value_list
-                    name = self.get_application_names(*exe_paths)
-                    print(name)
-                    self.task_list.addItem(f'定義名{key}:アプリ名{name}')
-                    self.save_tasks()
-                    #self.run_commands()
-
-    def run_commands(self):
-        key = self.task_list.selectedItems()[0].text()
-        for value in self.dictionary_list[key]:
-            if isinstance(value, str):
-                print(value)
-                subprocess.Popen(value)
-    def get_application_names(self,*exe_paths):
-        application_names = []
-        for exe_path in exe_paths:
-            # ファイルパスを分割してリストにする
-            parts = exe_path.split(os.sep)
-            try:
-            # ファイルパスから\\Applicationのインデックスを取得する
-                app_index = parts.index('C:')
-                # アプリケーション名の直前の要素を取得
-                app_name = parts[app_index + 2]
-                application_names.append(app_name)
-            except ValueError:
-            # 'Application'が見つからない場合は例外処理を行う
-                print(f"'Application'が {exe_path} で見つかりませんでした。")
-                continue
-        return application_names
-    def extract_key(self,task_string):
-        # 文字列を','で分割し、最初の要素を取得します
-        # この要素は'リスト{key}'の形式です
-        first_part = task_string.split(',')[0]
-
-        # 'リスト'と'}'の間にある文字列を取得し、'リスト'を削除してkeyだけを取り出します
-        key = first_part.split('定義名')[1].split(':')[0]
-    
-        return key
+    def doubleclicked(self,item):
+        # クリックされたToDoリストの要素を取得する関数
+        selected_task = item.text()
+        print("Selected Task:", selected_task)
+        #対応するアプリを開く
+        for exe_path in self.taskdic[selected_task]:
+           subprocess.Popen(exe_path)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
