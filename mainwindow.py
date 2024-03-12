@@ -193,7 +193,7 @@ class MainWindow(QMainWindow):
         for exe_path in self.taskdic[selected_task]:
            subprocess.Popen(exe_path)
 
-    def about(self,now,before):
+    def about(self,now):
         self.detail.clear()
         for i in self.taskdic[now.text()]:
             self.detail.addItem(i[i.rfind("\\")+1:])
