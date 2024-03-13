@@ -5,6 +5,7 @@ import re
 from pathlib import Path
 import PySide6.QtCore as Qc
 import PySide6.QtWidgets as Qw
+import PySide6.QtGui as Qg
 import getpass
 import mainwindow as m
 import pickle
@@ -182,9 +183,8 @@ class Config(Qw.QMainWindow):
       Qw.QListWidgetItem(Qw.QFileIconProvider().icon(Qc.QFileInfo(i)), i, self.listview)
 
   def delete(self):
-    deletelist = [self.listview.row(i) for i in self.listview.selectedItems()]
-    for i in range(len(deletelist)):
-      self.listview.takeItem(deletelist[i]-i)
+    for i in self.listview.selectedItems():
+      self.listview.takeItem(self.listview.row(i))
     self.save()
 
   # ドラッグ処理
@@ -199,6 +199,11 @@ class Config(Qw.QMainWindow):
       url = i.path()[1:].replace('/',"\\")
       Qw.QListWidgetItem(Qw.QFileIconProvider().icon(Qc.QFileInfo(url)), url, self.listview)
     self.save()
+  
+  def keyPressEvent(self, event: Qg.QKeyEvent):
+    key = event.key()
+    if key == Qc.Qt.Key_Delete:
+      self.delete()
 
 # 本体
 if __name__ == '__main__':
