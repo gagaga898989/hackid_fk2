@@ -15,6 +15,7 @@ class MainWindow(QMainWindow):
         global mw
         mw = self
         self.taskdic = {}
+        self.can = True
         super().__init__()
         self.setWindowTitle("Main Window")
         #win32com
@@ -82,7 +83,8 @@ class MainWindow(QMainWindow):
         # 詳細表示
         self.detail = QListWidget()
         self.detail.itemPressed.connect(self.detailpressed)
-        self.detail.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.detail.setMovement(QListWidget.Snap)
+        self.detail.itemChanged.connect(self.detailmoved)
         
         #リスト定義の削除ボタン
         add_button2 = QPushButton('リスト削除')
@@ -231,11 +233,31 @@ class MainWindow(QMainWindow):
             QListWidgetItem(QFileIconProvider().icon(QFileInfo(i)), i[i.rfind("\\")+1:], self.detail)
 
     def moved(self,item):
+        print(self.task_list.row(item))
         old = self.task_list.row(self.task_list.selectedItems()[0])
         self.task_list.takeItem(old)
         item.setSelected(True)
         self.save_tasks()
         self.about(item)
+
+    def detailmoved(self,now):
+        if self.can:
+            old = self.detail.row(self.detail.selectedItems()[0])
+            now = self.detail.row(now)
+            key = self.task_list.selectedItems()[0].text()
+            dic = self.taskdic
+            if old > now:
+                old = old - 1
+                p = dic[key].pop(old)
+                dic[key].insert(now,p)
+            elif old < now:
+                now = now - 1
+                p = dic[key].pop(old)
+                dic[key].insert(now,p)
+            self.save_tasks()
+            self.about(self.task_list.selectedItems()[0])
+            self.detail.item(now).setSelected(True)
+        self.can = not self.can
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
