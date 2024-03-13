@@ -167,10 +167,9 @@ class Config(Qw.QMainWindow):
         m.mw.task_list.takeItem(m.mw.task_list.row(m.mw.task_list.findItems(key,Qc.Qt.MatchCaseSensitive)[0]))
         del d[key]
     d[key] = [i.text() for i in self.listview.selectedItems()]
-    with open("taskdata.pickle", "wb") as f:
-      pickle.dump(d, f)
     self.label.setText("")
     m.mw.task_list.addItem(f'{key}')
+    m.mw.save_tasks()
 
   def exp(self):
     path = Qw.QFileDialog.getOpenFileNames(

@@ -38,9 +38,9 @@ class MainWindow(QMainWindow):
         button1 = QPushButton("リスト作成")
         button1.clicked.connect(self.on_button1_clicked)
 
-        # # ボタン3を作成
-        # button3 = QPushButton("選択しているジャンルのアプリを起動する")
-        # button3.clicked.connect(self.on_button3_clicked)
+        # ボタン3を作成
+        button3 = QPushButton("選択しているジャンルのアプリを起動する")
+        button3.clicked.connect(self.on_button3_clicked)
         
         #おみくじ関係
         # QLabelを作成して、テキストを設定します
@@ -104,7 +104,7 @@ class MainWindow(QMainWindow):
 
         sabu_layout = QHBoxLayout()
         sabu_layout.addWidget(add_button2)
-        # sabu_layout.addWidget(button3)
+        sabu_layout.addWidget(button3)
         sabu_layout.addWidget(button1)
 
         layout.addLayout(list_layout)
@@ -170,8 +170,9 @@ class MainWindow(QMainWindow):
     def load_tasks(self):
         if os.path.isfile("taskdata.pickle"):
           with open("taskdata.pickle",'rb') as f:
-            self.taskdic = pickle.load(f)
-          keys = self.taskdic.keys()
+            dic = pickle.load(f)
+          self.taskdic = dic[0]
+          keys = dic[1]
           for i in keys:
             self.task_list.addItem(f'{i}')
 
@@ -200,18 +201,21 @@ class MainWindow(QMainWindow):
             except AttributeError:
                 pass
 
-    # def on_button3_clicked(self):
-    #     # クリックされたToDoリストの要素を取得する関数
-    #     selected_task = self.task_list.currentItem().text()
-    #     print("Selected Task:", selected_task)
-    #     #対応するアプリを開く
-    #     for exe_path in self.taskdic[selected_task]:
-    #        subprocess.Popen(exe_path)
+    def on_button3_clicked(self):
+        # クリックされたToDoリストの要素を取得する関数
+        selected_task = self.task_list.currentItem().text()
+        print("Selected Task:", selected_task)
+        #対応するアプリを開く
+        for exe_path in self.taskdic[selected_task]:
+           subprocess.Popen(exe_path)
 
     # keyを保存する関数
     def save_tasks(self):
+        keys = [self.task_list.item(i).text() for i in range(self.task_list.count())]
+        dic = [self.taskdic,keys]
+        print(type(dic))
         with open("taskdata.pickle", "wb") as f:
-            pickle.dump(self.taskdic, f)
+            pickle.dump(dic, f)
 
     def doubleclicked(self,item):
         # クリックされたToDoリストの要素を取得する関数
@@ -230,6 +234,8 @@ class MainWindow(QMainWindow):
         old = self.task_list.row(self.task_list.selectedItems()[0])
         self.task_list.takeItem(old)
         item.setSelected(True)
+        self.save_tasks()
+        self.about(item)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
