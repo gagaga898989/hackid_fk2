@@ -1,9 +1,11 @@
 import subprocess
 import config as c
 import sys
-from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget,QLabel,QListWidget,QMessageBox,QFrame,QHBoxLayout
-from PySide6.QtGui import QFont
-from PySide6.QtCore import Qt  # Qtモジュールをインポートする
+from PySide6.QtWidgets import \
+    QMainWindow, QPushButton,QApplication,QVBoxLayout, QWidget,QLabel,QListWidget,QFrame,QHBoxLayout,\
+    QFileIconProvider,QListWidgetItem,QAbstractItemView
+from PySide6.QtGui import QFont,QKeyEvent
+from PySide6.QtCore import Qt,QFileInfo
 import os
 import random
 import pickle
@@ -36,9 +38,9 @@ class MainWindow(QMainWindow):
         button1 = QPushButton("リスト作成")
         button1.clicked.connect(self.on_button1_clicked)
 
-        # ボタン3を作成
-        button3 = QPushButton("選択しているジャンルのアプリを起動する")
-        button3.clicked.connect(self.on_button3_clicked)
+        # # ボタン3を作成
+        # button3 = QPushButton("選択しているジャンルのアプリを起動する")
+        # button3.clicked.connect(self.on_button3_clicked)
         
         #おみくじ関係
         # QLabelを作成して、テキストを設定します
@@ -71,11 +73,16 @@ class MainWindow(QMainWindow):
         # タスクを表示するリストウィジェット
         self.task_list = QListWidget()
         self.task_list.setMaximumSize(200,400)
+        self.task_list.setMovement(QListWidget.Snap)
         self.task_list.itemDoubleClicked.connect(self.doubleclicked)
         self.task_list.currentItemChanged.connect(self.about)
+        self.task_list.itemChanged.connect(self.moved)
+        self.task_list.itemPressed.connect(self.taskpressed)
 
         # 詳細表示
         self.detail = QListWidget()
+        self.detail.itemPressed.connect(self.detailpressed)
+        self.detail.setSelectionMode(QAbstractItemView.ExtendedSelection)
         
         #リスト定義の削除ボタン
         add_button2 = QPushButton('リスト削除')
@@ -90,13 +97,14 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.result_frame)
         layout.addWidget(self.draw_button)
 
+        #リストレイアウトを作成
         list_layout = QHBoxLayout()
         list_layout.addWidget(self.task_list)
         list_layout.addWidget(self.detail)
 
         sabu_layout = QHBoxLayout()
         sabu_layout.addWidget(add_button2)
-        sabu_layout.addWidget(button3)
+        # sabu_layout.addWidget(button3)
         sabu_layout.addWidget(button1)
 
         layout.addLayout(list_layout)
@@ -172,13 +180,33 @@ class MainWindow(QMainWindow):
         self.w = c.Config()
         self.w.show()
 
-    def on_button3_clicked(self):
-        # クリックされたToDoリストの要素を取得する関数
-        selected_task = self.task_list.currentItem().text()
-        print("Selected Task:", selected_task)
-        #対応するアプリを開く
-        for exe_path in self.taskdic[selected_task]:
-           subprocess.Popen(exe_path)
+    def taskpressed(self):
+        self.activelist = self.task_list
+
+    def detailpressed(self):
+        self.activelist = self.detail
+
+    def keyPressEvent(self, event: QKeyEvent):
+        key = event.key()
+        if key == Qt.Key_Delete:
+            try:
+                for i in self.activelist.selectedItems():
+                    if self.activelist == self.task_list:
+                        del self.taskdic[i.text()]
+                    elif self.activelist == self.detail:
+                        del self.taskdic[self.task_list.selectedItems()[0].text()][self.activelist.row(i)]
+                    self.activelist.takeItem(self.activelist.row(i))
+                self.save_tasks()
+            except AttributeError:
+                pass
+
+    # def on_button3_clicked(self):
+    #     # クリックされたToDoリストの要素を取得する関数
+    #     selected_task = self.task_list.currentItem().text()
+    #     print("Selected Task:", selected_task)
+    #     #対応するアプリを開く
+    #     for exe_path in self.taskdic[selected_task]:
+    #        subprocess.Popen(exe_path)
 
     # keyを保存する関数
     def save_tasks(self):
@@ -196,24 +224,12 @@ class MainWindow(QMainWindow):
     def about(self,now):
         self.detail.clear()
         for i in self.taskdic[now.text()]:
-            self.detail.addItem(i[i.rfind("\\")+1:])
+            QListWidgetItem(QFileIconProvider().icon(QFileInfo(i)), i[i.rfind("\\")+1:], self.detail)
 
-    def get_application_names(self,*exe_paths):
-        application_names = []
-        for exe_path in exe_paths:
-            # ファイルパスを分割してリストにする
-            parts = exe_path.split(os.sep)
-            try:
-            # ファイルパスから\\Applicationのインデックスを取得する
-                app_index = parts.index('C:')
-                # アプリケーション名の直前の要素を取得
-                app_name = parts[app_index + 2]
-                application_names.append(app_name)
-            except ValueError:
-            # 'Application'が見つからない場合は例外処理を行う
-                print(f"'Application'が {exe_path} で見つかりませんでした。")
-                continue
-        return application_names
+    def moved(self,item):
+        old = self.task_list.row(self.task_list.selectedItems()[0])
+        self.task_list.takeItem(old)
+        item.setSelected(True)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
