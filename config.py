@@ -107,7 +107,7 @@ class Config(Qw.QMainWindow):
     self.btn_Alluncheck.clicked.connect(self.Alluncheck)
 
     #「エクスプローラーで選択」ボタンの生成と設定
-    self.btn_exp = Qw.QPushButton('エクスプローラーから項目を追加')
+    self.btn_exp = Qw.QPushButton('リストに項目を追加')
     self.btn_exp.setMaximumSize(200,20)
     self.btn_exp.setSizePolicy(sp_exp,sp_exp)
     button_layout.addWidget(self.btn_exp)
@@ -155,8 +155,6 @@ class Config(Qw.QMainWindow):
     if key == "":
       self.label.setText("key名を入力してください")
       return
-    if self.listview.selectedItems() == []:
-      self.label.setText("ファイルが選択されていません")
     if key in d:
       reply = Qw.QMessageBox.question(self, 'key名が重複しています',
               "内容を上書きしますか？",
@@ -168,6 +166,8 @@ class Config(Qw.QMainWindow):
         del d[key]
     d[key] = [i.text() for i in self.listview.selectedItems()]
     self.label.setText("")
+    self.tb_name.setText("")
+    self.Alluncheck()
     m.mw.task_list.addItem(f'{key}')
     m.mw.save_tasks()
 

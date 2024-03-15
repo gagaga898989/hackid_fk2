@@ -36,12 +36,12 @@ class MainWindow(QMainWindow):
         self.label.setGeometry(150, 0, 800, 300)
 
         # ボタン1を作成
-        button1 = QPushButton("リスト作成")
-        button1.clicked.connect(self.on_button1_clicked)
+        self.editlist_button = QPushButton("リスト作成")
+        self.editlist_button.clicked.connect(self.editlist)
 
         # ボタン3を作成
-        button3 = QPushButton("選択しているジャンルのアプリを起動する")
-        button3.clicked.connect(self.on_button3_clicked)
+        self.open_button = QPushButton("選択しているジャンルのアプリを起動する")
+        self.open_button.clicked.connect(self.fileopen)
         
         #おみくじ関係
         # QLabelを作成して、テキストを設定します
@@ -85,6 +85,8 @@ class MainWindow(QMainWindow):
         self.detail.itemPressed.connect(self.detailpressed)
         self.detail.setMovement(QListWidget.Snap)
         self.detail.itemChanged.connect(self.detailmoved)
+        self.detail.itemDoubleClicked.connect(self.detaildoubleclicked)
+        self.detail.setAcceptDrops(True)
         
         #リスト定義の削除ボタン
         add_button2 = QPushButton('リスト削除')
@@ -99,15 +101,25 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.result_frame)
         layout.addWidget(self.draw_button)
 
+        # ボタンの作成
+        self.rename_button = QPushButton('グループの名前を変更')
+        self.rename_button.clicked.connect(self.rename)
+
+        tasklist_layout = QVBoxLayout()
+        tasklist_layout.addWidget(self.task_list)
+        tasklist_layout.addWidget(self.rename_button)
+
+
         #リストレイアウトを作成
         list_layout = QHBoxLayout()
-        list_layout.addWidget(self.task_list)
+        list_layout.addLayout(tasklist_layout)
         list_layout.addWidget(self.detail)
+
 
         sabu_layout = QHBoxLayout()
         sabu_layout.addWidget(add_button2)
-        sabu_layout.addWidget(button3)
-        sabu_layout.addWidget(button1)
+        sabu_layout.addWidget(self.open_button)
+        sabu_layout.addWidget(self.editlist_button)
 
         layout.addLayout(list_layout)
         layout.addLayout(sabu_layout)
@@ -178,7 +190,7 @@ class MainWindow(QMainWindow):
           for i in keys:
             self.task_list.addItem(f'{i}')
 
-    def on_button1_clicked(self):
+    def editlist(self):
         #configを実行する
         self.w = c.Config()
         self.w.show()
@@ -203,7 +215,7 @@ class MainWindow(QMainWindow):
             except AttributeError:
                 pass
 
-    def on_button3_clicked(self):
+    def fileopen(self):
         # クリックされたToDoリストの要素を取得する関数
         selected_task = self.task_list.currentItem().text()
         print("Selected Task:", selected_task)
@@ -227,24 +239,38 @@ class MainWindow(QMainWindow):
         for exe_path in self.taskdic[selected_task]:
            subprocess.Popen(exe_path)
 
+    def detaildoubleclicked(self,item):
+        selected_task = self.task_list.selectedItems()[0].text()
+        subprocess.Popen(self.taskdic[selected_task][self.detail.row(item)])
+
     def about(self,now):
         self.detail.clear()
         for i in self.taskdic[now.text()]:
             QListWidgetItem(QFileIconProvider().icon(QFileInfo(i)), i[i.rfind("\\")+1:], self.detail)
 
     def moved(self,item):
-        print(self.task_list.row(item))
-        old = self.task_list.row(self.task_list.selectedItems()[0])
-        self.task_list.takeItem(old)
-        item.setSelected(True)
-        self.save_tasks()
-        self.about(item)
+        if not len(self.taskdic) == self.task_list.count():
+            old = self.task_list.row(self.task_list.selectedItems()[0])
+            self.task_list.takeItem(old)
+            item.setSelected(True)
+            self.save_tasks()
+            self.about(item)
+        elif self.task_list.isPersistentEditorOpen(item):
+            row = self.task_list.row(item)
+            key = item.text()
+            print(row)
+            print(key)
+            l = self.taskdic.pop(self.oldkey)
+            self.taskdic[key] = l
+            self.save_tasks()
+            self.task_list.closePersistentEditor(item)
+            print(self.taskdic)
 
     def detailmoved(self,now):
-        if self.can:
+        key = self.task_list.selectedItems()[0].text()
+        if not len(self.taskdic[key]) == self.detail.count():
             old = self.detail.row(self.detail.selectedItems()[0])
             now = self.detail.row(now)
-            key = self.task_list.selectedItems()[0].text()
             dic = self.taskdic
             if old > now:
                 old = old - 1
@@ -257,8 +283,26 @@ class MainWindow(QMainWindow):
             self.save_tasks()
             self.about(self.task_list.selectedItems()[0])
             self.detail.item(now).setSelected(True)
-        self.can = not self.can
 
+    # ドラッグ処理
+    def dragEnterEvent(self,e):
+        if e.mimeData().hasUrls() and not len(self.task_list.selectedItems()) == 0:
+            e.accept()
+
+    # ドロップ処理
+    def dropEvent(self, e):
+        urls = e.mimeData().urls()
+        for i in urls:
+            url = i.path()[1:].replace('/',"\\")
+            self.taskdic[self.task_list.selectedItems()[0].text()].append(url)
+        self.about(self.task_list.selectedItems()[0])
+        self.save_tasks()
+
+    def rename(self):
+        self.task_list.openPersistentEditor(self.task_list.selectedItems()[0])
+        self.oldkey = self.task_list.selectedItems()[0].text()
+        self.task_list.setFocus()
+        
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     main_window = MainWindow()
