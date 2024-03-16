@@ -249,13 +249,7 @@ class MainWindow(QMainWindow):
             QListWidgetItem(QFileIconProvider().icon(QFileInfo(i)), i[i.rfind("\\")+1:], self.detail)
 
     def moved(self,item):
-        if not len(self.taskdic) == self.task_list.count():
-            old = self.task_list.row(self.task_list.selectedItems()[0])
-            self.task_list.takeItem(old)
-            item.setSelected(True)
-            self.save_tasks()
-            self.about(item)
-        elif self.task_list.isPersistentEditorOpen(item):
+        if self.task_list.isPersistentEditorOpen(item):
             row = self.task_list.row(item)
             key = item.text()
             print(row)
@@ -265,6 +259,12 @@ class MainWindow(QMainWindow):
             self.save_tasks()
             self.task_list.closePersistentEditor(item)
             print(self.taskdic)
+        else:
+            old = self.task_list.row(self.task_list.selectedItems()[0])
+            self.task_list.takeItem(old)
+            item.setSelected(True)
+            self.save_tasks()
+            self.about(item)
 
     def detailmoved(self,now):
         key = self.task_list.selectedItems()[0].text()
