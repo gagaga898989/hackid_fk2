@@ -237,11 +237,11 @@ class MainWindow(QMainWindow):
         print("Selected Task:", selected_task)
         #対応するアプリを開く
         for exe_path in self.taskdic[selected_task]:
-           subprocess.Popen(exe_path)
+           subprocess.Popen(exe_path,shell = True)
 
     def detaildoubleclicked(self,item):
         selected_task = self.task_list.selectedItems()[0].text()
-        subprocess.Popen(self.taskdic[selected_task][self.detail.row(item)])
+        subprocess.Popen(self.taskdic[selected_task][self.detail.row(item)],shell = True)
 
     def about(self,now):
         self.detail.clear()
