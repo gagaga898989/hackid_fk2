@@ -221,7 +221,7 @@ class MainWindow(QMainWindow):
         print("Selected Task:", selected_task)
         #対応するアプリを開く
         for exe_path in self.taskdic[selected_task]:
-           subprocess.Popen(exe_path)
+           subprocess.Popen(exe_path,shell=True)
 
     # keyを保存する関数
     def save_tasks(self):
